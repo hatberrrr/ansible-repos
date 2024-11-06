@@ -1,0 +1,21 @@
+---
+- name: infra prep | install python
+  raw: test -e /usr/bin/python3 || (apt update -y && apt install -y python3)
+
+- name: infra prep | Remove sources.list
+  file:
+    path: "{{ path_to_source_list }}"
+    state: absent
+
+- name: infra prep | Add repos
+  lineinfile:
+    path: "{{ path_to_source_list }}"
+    line: "{{ item }}"
+    create: yes
+  with_items: "{{repos}}"
+  notify: Update apt
+
+- name: infra prep | Install docker and compose
+  apt:
+    name: "{{ docker_compose_packs }}"
+    update_cache: yes

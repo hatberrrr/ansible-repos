@@ -1,0 +1,6 @@
+---
+# tasks file for pg
+- include_tasks: "{{ item }}"
+  loop:
+    - prep.yml
+    - pg.yml

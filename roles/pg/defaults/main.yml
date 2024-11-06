@@ -1,0 +1,9 @@
+---
+# defaults file for pg
+pack_pg:
+- "postgrespro-{{pg_version}}"
+- python3-psycopg2
+pg_version: std-14
+pg_repo_add_path: /opt/
+pg_user_pass: postgres
+pg_app_asu_name: asu

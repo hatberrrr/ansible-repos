@@ -1,0 +1,40 @@
+---
+#asu_app role vars
+def_app_asu_dir: /opt/asu
+app_asu_image: asu:latest
+app_asu_image_tar: image_asu.tar
+nginx_image_vers: alpine
+nginx_image_tar: nginx_"{{nginx_image_vers}}".tar
+
+#infrastructure role vars
+docker_compose_packs:
+- docker
+- docker-compose
+repos:
+- "deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-main/     1.7_x86-64 main contrib non-free"
+- "deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-update/   1.7_x86-64 main contrib non-free"
+- "deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-base/     1.7_x86-64 main contrib non-free"
+- "deb http://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free"
+- "deb https://dl.astralinux.ru/astra/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 astra-ce"
+path_to_source_list: /etc/apt/sources.list
+
+#app_m role vars
+asu_host: "{{ansible_host}}"  # optional - change if ASU_app is on different host Ex: asu_host: 192.168.0.1
+def_metr_dir: /opt/metr
+app_image_name: metr:latest
+app_image_tar: images_metr.tar
+local_images_storage: /opt/images/
+pg_appM_host: "{{ansible_host}}" # optional - change if DB is on remote host
+pg_appM_host_port: 5434
+pg_appM_user: postgres
+pg_appM_pass: postgres
+
+#pg role vars
+pack_pg:
+- "postgrespro-{{pg_version}}"
+- python3-psycopg2
+pg_version: std-14
+pg_repo_add_path: /opt/
+pg_user_pass: postgres
+pg_app_asu_name: asu
+pg_app_M_name: met

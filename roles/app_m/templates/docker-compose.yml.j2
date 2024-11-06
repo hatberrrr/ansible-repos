@@ -1,0 +1,37 @@
+version: '3'
+services:
+    
+    App_M:
+        image: App_M:latest
+        restart: always
+        environment:
+            - HOST_IP_ADDRESS={{ ansible_host }}
+            - App_M_NGINX_PORT=94
+        volumes:
+#            - ./appsettings.json:/var/www/App_Molog/web/appsettings.json
+            - ./connectionStrings.json:/var/www/App_Molog/web/connectionStrings.json
+            - ./logs:/var/www/App_Molog/web/logs
+            - /etc/timezone:/etc/timezone:ro
+            - /etc/localtime:/etc/localtime:ro
+        container_name: App_M
+        ports:
+            - 8094:95
+        networks:
+            App_M_network:
+            
+    nginx:
+        image: nginx:alpine
+        restart: always
+        container_name: Nginx
+        ports: 
+            - 94:94
+        volumes:
+            - ./nginx/conf.conf:/etc/nginx/conf.d/conf.conf
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - App_M
+        networks:
+            App_M_network:       
+
+networks:
+ App_M_network:

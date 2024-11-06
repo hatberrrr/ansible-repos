@@ -1,0 +1,17 @@
+---
+- name: App_M start | create container
+  community.docker.docker_compose:
+    project_src: "{{def_metr_dir}}"
+  register: output
+
+- name: App_M start | Show output
+  debug:
+    var: output
+
+- name: App_M start | Show existing containers
+  command: docker ps -a
+  register: docker_ps
+
+- name: App_M start | Containers
+  debug:
+    msg: "{{ docker_ps }}"

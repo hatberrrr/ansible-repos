@@ -1,0 +1,23 @@
+---
+- name: App_M image | Check if image is already loaded
+  shell: docker inspect "{{app_image_name}}"
+  register: exmetr
+  ignore_errors: yes
+
+- name: App_M image | Check if image already on the remote host
+  stat:
+    path: "{{def_metr_dir}}/{{app_image_tar}}"
+  register: exist_metr
+
+- name: App_M image | Copy image metrolog to remote host
+  copy:
+    src: "{{local_images_storage}}/{{app_image_tar}}"
+    dest: "{{def_metr_dir}}"
+  when: not exist_metr.stat.exists and exmetr.stdout == "[]"
+
+- name: App_M image | load metrolog
+  community.docker.docker_image_load:
+    path: "{{def_metr_dir}}/{{app_image_tar}}"
+  when: exmetr.stdout == "[]"
+
+

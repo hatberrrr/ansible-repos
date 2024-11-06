@@ -1,0 +1,36 @@
+---   
+- name: Postgres prep | ADD postgres to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^postgres ALL='
+    line: 'postgres ALL=(ALL) NOPASSWD: ALL'
+    state: present
+
+- name: Postgres prep | Change pass for postgres user
+  become_user: postgres
+  postgresql_user:
+    login_unix_socket: /tmp
+    name: postgres
+    password: "{{pg_user_pass}}"
+
+- name: Postgres prep | Change host in pg_hba.conf
+  lineinfile:
+    path: "/var/lib/pgpro/{{pg_version}}/data/pg_hba.conf"
+    state: present
+    regexp: '^host\s+all\s+all\s+127\.0\.0\.1/32'
+    line: 'host	all		all		0.0.0.0/0		trust'
+    backrefs: yes
+    backup: yes
+
+- name: Postgres prep | Change listen_addresses in postgresql.conf
+  lineinfile:
+    path: "/var/lib/pgpro/{{pg_version}}/data/postgresql.conf"
+    state: present
+    regexp: '^#listen_addresses = '
+    line: listen_addresses = '*'
+    backup: yes
+    backrefs: yes
+  notify: Restart pg
+
+
+

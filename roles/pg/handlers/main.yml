@@ -1,0 +1,10 @@
+---
+- name: Update apt
+  apt:
+    update_cache: yes
+- name: Restart pg
+  service:
+    name: "postgrespro-{{pg_version}}"
+    state: restarted
+
+

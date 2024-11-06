@@ -1,0 +1,26 @@
+---
+- name: Postgres prep | Take repo file
+  get_url: 
+    url: "http://repo.postgrespro.ru/{{pg_version}}/keys/pgpro-repo-add.sh"
+    dest: "{{pg_repo_add_path}}"
+    mode: '777'
+
+- name: Postgres prep | Check if repo exists
+  stat:
+    path: "/etc/apt/sources.list.d/postgrespro-{{pg_version}}.list"
+  register: stat_result
+
+- name: Postgres prep | SHell scrip to apply repo if not exists
+  shell: "{{pg_repo_add_path}}/pgpro-repo-add.sh"
+  when: not stat_result.stat.exists 
+  notify: Update apt
+
+- name: Postgres prep | Install pgpro and psycopg2
+  apt:
+    name: "{{pack_pg}}"  
+    state: present
+
+- name: Postgres prep | Check service status
+  service:
+    name: "postgrespro-{{pg_version}}"
+    state: started

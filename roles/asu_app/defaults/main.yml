@@ -1,0 +1,6 @@
+---
+def_app_asu_dir: /opt/asu
+app_asu_image: asu:latest
+app_asu_image_tar: image_asu.tar
+nginx_image_vers: alpine
+nginx_image_tar: nginx_"{{nginx_image_vers}}".tar

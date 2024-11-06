@@ -1,0 +1,31 @@
+---
+- name: App_M preparations | create dirs for app-metr
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '777'
+  with_items:
+    - "{{def_metr_dir}}/"
+    - "{{def_metr_dir}}/nginx"
+    - "{{def_metr_dir}}/logs"
+
+- name: App_M preparations | copy configs for app-metr
+  template:
+    src: "{{ item.src }}"
+    dest: "{{def_metr_dir}}/{{ item.path | regex_replace('.j2$', '') }}"
+  with_filetree: ../templates/
+  become: yes
+  when: item.state == 'file'
+  
+- name: App_M preparations | move nginx confs to nginx dir
+  command: mv "{{def_metr_dir}}/{{ item }}" "{{def_metr_dir}}/nginx/"
+  with_items:
+    - conf.conf
+    - nginx.conf
+
+- name: App_M preparations | Create database for app_M
+  become_user: postgres
+  postgresql_db: 
+    login_unix_socket: /tmp
+    name: "{{pg_app_M_name}}"
+

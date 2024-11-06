@@ -1,0 +1,18 @@
+---
+- name: App_asu start | create container
+  community.docker.docker_compose:
+    project_src: "{{def_app_asu_dir}}"
+  register: output
+
+- name: App_asu start | Show output
+  debug:
+    var: output
+
+- name: App_asu start | Show existing containers
+  command: docker ps -a
+  register: docker_ps
+
+- name: App_asu start | Containers
+  debug:
+    msg: "{{ docker_ps }}"
+

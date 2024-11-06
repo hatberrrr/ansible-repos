@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  roles:
+  - infrastructure
+  - pg
+  - asu_app
+  - app_m
+  

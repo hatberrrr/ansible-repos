@@ -1,0 +1,43 @@
+---
+- name: App_asu image | Check if image is already loaded
+  shell: docker inspect  "{{app_asu_image}}"
+  register: exasur
+  ignore_errors: yes
+
+- name: App_asu image | Check if image already on the remote host
+  stat:
+    path: "{{def_app_asu_dir}}/asureo.tar"
+  register: exist_asu
+
+- name: App_asu image | Copy image asureo to remote host
+  copy:
+    src: "{{def_app_asu_dir}}/{{app_asu_image_tar}}"
+    dest: "{{def_app_asu_dir}}"
+  when: not exist_asu.stat.exists and exasur.stdout == "[]"
+
+- name: App_asu image | Check if nginx image alredy loaded
+  shell: docker inspect  nginx:"{{nginx_image_vers}}"
+  register: exnginx
+  ignore_errors: yes
+
+- name: App_asu image | Check if image already on the remote host
+  stat:
+    path: "{{def_app_asu_dir}}/{{nginx_image_tar}}"
+  register: nginx
+
+- name: App_asu image | Copy image nginx to remote host
+  copy:
+    src: "{{def_app_asu_dir}}/{{nginx_image_tar}}"
+    dest: "{{def_app_asu_dir}}"
+  when: not nginx.stat.exists and exnginx.stdout == "[]"
+
+- name: App_asu image | load nginx alpine
+  community.docker.docker_image_load:
+    path: "{{def_app_asu_dir}}/{{nginx_image_tar}}"
+  when: exnginx.stdout == "[]"
+
+- name: App_asu image | load asureo
+  community.docker.docker_image_load:
+    path: "{{def_app_asu_dir}}/{{app_asu_image_tar}}"
+  when: exasur.stdout == "[]"
+

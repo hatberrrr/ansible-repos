@@ -1,0 +1,65 @@
+---
+- name: Add prometheus group
+  group:
+    name: prometheus
+    state: present
+
+- name: Add prometheus user
+  user:
+    name: "{{prometheus_user}}"
+    shell: /bin/false
+    groups: prometheus
+    append: true
+
+- name: Create prometheus dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{prometheus_user}}"
+    group: prometheus
+    mode: '777'
+  with_items:
+    - "{{prometheus_path}}"
+    - "{{prometheus_path}}/data"
+
+- name: Download prometehus from github
+  get_url:
+    url: "{{prometheus_url}}"
+    dest: "/home/{{ansible_user}}"
+
+- name: Extract prometheus tar
+  unarchive:
+    remote_src: true
+    src: "/home/{{ansible_user}}/{{prometheus_full_version}}.tar.gz"
+    dest: "/home/{{ansible_user}}"
+
+- name: Copy binary file
+  copy:
+    remote_src: true
+    src: "/home/{{ansible_user}}/{{prometheus_full_version}}/prometheus"
+    dest: /usr/bin/
+    owner: "{{prometheus_user}}"
+    mode: '755'
+    group: prometheus
+
+- name: Copy conf file for prometheus server
+  template:
+    src: ../templates/prometheus.yml.j2
+    dest: "{{prometheus_path}}/prometheus.yml"
+    owner: "{{prometheus_user}}"
+    group: prometheus
+  become: yes
+
+- name: Create service
+  template:
+    src: ../templates/prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+  become: yes
+
+- name: Ensure the service is running
+  become: true
+  systemd:
+    daemon-reload: true
+    name: prometheus.service
+    enabled: true
+    state: started

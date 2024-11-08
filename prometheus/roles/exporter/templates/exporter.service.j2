@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus {{exporter_name}}
+After=network-online.target
+
+[Service]
+Type=simple
+User={{exporter_name}}
+Group={{exporter_name}}
+Restart=on-failure
+ExecStart=/usr/bin/{{exporter_name}}
+
+[Install]
+WantedBy=multi-user.target

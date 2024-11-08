@@ -1,0 +1,16 @@
+[Unit]
+Description=Prometheus server
+After=network-online.target
+
+[Service]
+Type=simple
+User={{prometheus_user}}
+Group=prometheus
+Restart=on-failure
+ExecStart=/usr/bin/prometheus \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --storage.tsdb.path=/etc/prometheus/data \
+    --web.listen-address={{ansible_host}}:9090
+
+[Install]
+WantedBy=multi-user.target

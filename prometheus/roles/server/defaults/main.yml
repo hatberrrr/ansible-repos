@@ -1,0 +1,5 @@
+---
+prometheus_full_version: prometheus-2.55.1.linux-amd64
+prometheus_path: /etc/prometheus
+prometheus_user: prometheus
+prometheus_url: https://github.com/prometheus/prometheus/releases/download/v2.55.1/{{prometheus_full_version}}.tar.gz
